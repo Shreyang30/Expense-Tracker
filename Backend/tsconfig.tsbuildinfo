@@ -1,0 +1,1 @@
+{"root":["./src/app.ts","./src/database/database.ts","./src/middleware/islogged.ts","./src/routes/accounts.ts","./src/routes/category.ts","./src/routes/transactions.ts","./src/routes/userauth.ts"],"version":"5.6.3"}
