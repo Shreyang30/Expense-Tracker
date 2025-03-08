@@ -5,36 +5,41 @@ import { Strategy } from "passport-local";
 import db from "../Database/database";
 import {Strategy as GoogleStrategy} from "passport-google-oauth20";
 
-
 const router = express.Router();
 const saltRounds =12;
 
-router.get("/login",(req,res) => {
-    res.send("Login");
-})
 
-/*router.get("/logout", (req, res) => {
+router.get("/logout", (req, res) => {
     req.logout(function(err){
         if(err) {
             return (err);
         }
-    res.redirect("/home")
+        req.session.destroy((sessionErr) => {
+            if (sessionErr) {
+                return res.status(500).json({ message: "Logout failed", error: sessionErr });
+            }
+    return res.json({message: "User successfully logged out"})
+        });
     });
-  });*/
+  });
 
 
 router.get("/home",(req,res) => {
     res.send("Home");
 })
 
-router.get("/signup",(req,res) => {
-    res.send("Signup Page");
-})
+router.post("/login", (req, res, next) => {
+    passport.authenticate("local", (err:Error | null, user:Express.User | false) => {
+        if (err) return res.status(500).json({ message: "Server error", error: err });
+        if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-router.post("/login",passport.authenticate("local",{ 
-    successRedirect:"/home",
-    failureRedirect:"/login",
-}));
+        req.logIn(user, (loginErr) => {
+            if (loginErr) return res.status(500).json({ message: "Login error", error: loginErr });
+
+            return res.json({ message: "Login successful", user });
+        });
+    })(req, res, next);
+});
 
 router.get("/auth/google",
     passport.authenticate("google", {
@@ -49,20 +54,20 @@ router.get("/auth/google/home",
     })
 );
 
-router.post("/signup",async(req,res) => {
-    const name:String = req.body.name;
-    const email:String = req.body.email;
+router.post("/signup",async (req,res) => {
+    const name:string = req.body.name;
+    const email:string = req.body.email;
     const password = req.body.password;
     
     try{
          const check=await db.query("SELECT * FROM Users WHERE email=$1",[email]);
 
         if((check.rows.length)>0){
-            console.log("User Already exists");
+            res.status(400).json({message:"User Already Exists"});
         } else{
             bcrypt.hash(password,saltRounds,async (err,hash) =>{
                 if (err){
-                    console.log(err);
+                    res.status(500).json({message:Error})
                 } else{
                     const user = await db.query("INSERT INTO Users (name,email,password) VALUES ($1,$2,$3) RETURNING *",[name,email,hash]);
                     console.log(user.rows);
@@ -73,7 +78,7 @@ router.post("/signup",async(req,res) => {
     catch(err){
         console.log(err);  
     }
-    res.send("You are at the Signup page");
+    res.json({message:"User Successfully Created"});
 });
 
     

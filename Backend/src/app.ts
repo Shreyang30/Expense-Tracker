@@ -7,14 +7,29 @@ import accountRoute from "./routes/Accounts";
 import categoryRoute from "./routes/Category"
 import session from "express-session";
 import passport from "passport";
-
+import cors from "cors";
+import helmet from "helmet";
 
 env.config();
 
 const app=express();
+const allowedOrigins = [
+  "http://localhost:5173",
+];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, 
+  })
+);
+
+
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 const port =Number(process.env.PORT);
+
 
 app.use(
     session({
