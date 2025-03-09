@@ -139,18 +139,20 @@ passport.use(
       async (accessToken, refreshToken, profile, cb) => {
         try {
           //console.log(profile)
-          const result = await db.query("SELECT * FROM users WHERE email = $1", [
+          let result = await db.query("SELECT * FROM users WHERE email = $1", [
             profile.emails?.[0].value,
           ]);
           if (result.rows.length === 0) {
             const newUser = await db.query(
-              "INSERT INTO users (name,email, password) VALUES ($1, $2,$3)",
+              "INSERT INTO users (name,email, password) VALUES ($1, $2,$3) RETURNING *",
               [profile.displayName,profile.emails?.[0].value, "google"]
             );
-            return cb(null, newUser.rows[0]);
-          } else {
+            console.log(newUser);
+            result=newUser;
+          } 
+            console.log(result);
+            
             return cb(null, result.rows[0]);
-          }
         } catch (err) {
           return cb(err);
         }

@@ -2,12 +2,13 @@ import Button from "../Components/Button"
 import Heading from "../Components/Heading"
 import SubHeading from "../Components/SubHeading"
 import InputBox from "../Components/InputBox"
-//import SocialLogin from "../Components/SocialLogin"
-import {ChangeEvent,useState} from "react"
+import SocialLogin from "../Components/SocialLogin"
+import {ChangeEvent,useEffect,useState} from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
 var url="http://localhost:3000/signup"
+const socialurl="http://localhost:3000/auth/google"
 
 export default function (){
     const navigate = useNavigate();
@@ -20,6 +21,20 @@ export default function (){
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         Setsignupbody({...signupbody,[e.target.name]: e.target.value})
     };
+
+    useEffect(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get("token");
+        
+            if (token) {
+              localStorage.setItem("token", token);
+              navigate("/home");
+            }
+          }, [navigate]);
+    
+    const handleGoogleSignin = async() =>{
+            window.location.href = socialurl;
+        };
 
     const handleSignup = async() => {
             console.log(signupbody);
@@ -62,6 +77,12 @@ export default function (){
             />
 
             <Button text="Sign Up" type="submit" onClick={() => handleSignup()}/>
+
+            <div className="flex flex-row-reverse"><SocialLogin
+            className=""
+            text="Sign up with Google"
+            onClick={() => handleGoogleSignin()}
+            /></div>
         </div>
     </div>
 };
