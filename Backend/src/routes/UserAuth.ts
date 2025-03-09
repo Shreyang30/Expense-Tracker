@@ -4,13 +4,15 @@ import bcrypt from "bcrypt";
 import { Strategy } from "passport-local";
 import db from "../Database/database";
 import {Strategy as GoogleStrategy} from "passport-google-oauth20";
+import jwt from "jsonwebtoken";
+import env from "dotenv"
 
 const router = express.Router();
 const saltRounds =12;
 
 
 router.get("/logout", (req, res) => {
-    req.logout(function(err){
+    req.logout( function(err){
         if(err) {
             return (err);
         }
@@ -48,11 +50,17 @@ router.get("/auth/google",
 )
 
 router.get("/auth/google/home",
-    passport.authenticate("google",{
-        successRedirect:"/home",
-        failureRedirect:"/login",
-    })
-);
+    passport.authenticate("google",{session:false}) , (req,res) => {
+        const user = req.user as any;
+        console.log(user);
+        
+        const token= jwt.sign({id:user?.id,email:user?.email.value},process.env.SESSION_SECRET as string,{expiresIn:"1h"})
+        
+        const frontendurl= req.headers.origin || "http://localhost:5173";
+        console.log(frontendurl);
+        res.redirect(`${frontendurl}/signin?token=${token}`)
+    }
+    )
 
 router.post("/signup",async (req,res) => {
     const name:string = req.body.name;
@@ -130,7 +138,7 @@ passport.use(
       },
       async (accessToken, refreshToken, profile, cb) => {
         try {
-          console.log(profile)
+          //console.log(profile)
           const result = await db.query("SELECT * FROM users WHERE email = $1", [
             profile.emails?.[0].value,
           ]);

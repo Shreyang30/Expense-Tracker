@@ -1,13 +1,14 @@
 import InputBox from "../Components/InputBox";
 import Button from "../Components/Button";
-//import SocialLogin from "../Components/SocialLogin";
+import SocialLogin from "../Components/SocialLogin";
 import axios from "axios";
-import { ChangeEvent,useState } from "react";
+import { ChangeEvent,useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Heading from "../Components/Heading";
 import SubHeading from "../Components/SubHeading";
 
 var url="http://localhost:3000/login"
+var socialurl="http://localhost:3000/auth/google"
 
 export default function (){
     const navigate= useNavigate();
@@ -16,14 +17,35 @@ export default function (){
         password: "",
     });
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+          navigate("/home");
+        }
+      }, [navigate]);
+
+      useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+    
+        if (token) {
+          localStorage.setItem("token", token);
+          navigate("/home");
+        }
+      }, [navigate]);
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setloginBody({...loginBody,[e.target.name]: e.target.value})
+    };
+
+    const handleGoogleSignin = async() =>{
+        window.location.href = socialurl;
     };
 
     const handleSignin = async() => {
         console.log(loginBody);
         try {const res=await axios.post(url,loginBody,{ withCredentials: true });
-        localStorage.setItem("user",res.data.user);
+        localStorage.setItem("token",res.data.user);
         navigate("/home");
         console.log(res.data);
         
@@ -54,6 +76,12 @@ export default function (){
 
         <Button text="SignIn" type="submit" onClick={() => handleSignin()}/>
 
+
+        <div className="flex flex-row-reverse"><SocialLogin
+        className=""
+        text="Sign in with Google"
+        onClick={() => handleGoogleSignin()}
+        /></div>
         </div>
     </div>
 };

@@ -1,9 +1,8 @@
-import React from 'react';
 import {Link} from 'react-router-dom';
 
 interface SubHeadingProps{
     text?: string;
-    link?: string;
+    link: string;
     to?: string;
 }
 

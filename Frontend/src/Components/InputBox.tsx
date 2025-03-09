@@ -26,7 +26,7 @@ return (
       name={name}
       placeholder={placeholder}
       onChange={onChange}
-      className={`border border-gray-300 w-1/3 rounded-xl px-4 py-2 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 hover:border-gray-400 ${className}`}
+      className={`border-2 border-gray-300 w-1/3 rounded-xl px-4 py-2 transition focus:outline-none focus:ring-2 focus:ring-teal-300 hover:border-orange-400 ${className}`}
     />
   </div>
 );
