@@ -2,13 +2,13 @@ import { motion } from "framer-motion";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-700 text-white flex flex-col items-center justify-center">
 
       <header className="absolute top-0 w-full p-5 flex justify-between items-center">
         <h1 className="text-3xl font-bold">Expense Tracker</h1>
         <div>
-          <button className="p-2 border rounded-xl mr-4" onClick={() => window.location.href='/signin'}>Sign In</button>
-          <button className="p-2 border rounded-xl mr-4" onClick={() => window.location.href='/signup'}>Sign Up</button>
+          <button className="p-2 border rounded-xl hover:bg-red-700 mr-4" onClick={() => window.location.href='/signin'}>Sign In</button>
+          <button className="p-2 border rounded-xl hover:bg-red-700 mr-4" onClick={() => window.location.href='/signup'}>Sign Up</button>
         </div>
       </header>
       
@@ -23,7 +23,7 @@ export default function LandingPage() {
           Take control of your finances with our easy-to-use tracker. Save smart, spend wisely, and achieve financial freedom.
         </p>
         <div className="mt-6">
-          <button className=" border rounded-xl mb-10 px-6 py-3 text-lg " onClick={() => window.location.href='/signup'}>Get Started</button>
+          <button className=" border rounded-xl mb-10 hover:bg-red-700 px-6 py-3 text-lg " onClick={() => window.location.href='/signup'}>Get Started</button>
         </div>
       </motion.div>
       

@@ -52,12 +52,11 @@ router.get("/auth/google",
 router.get("/auth/google/home",
     passport.authenticate("google",{session:false}) , (req,res) => {
         const user = req.user as any;
-        console.log(user);
         
-        const token= jwt.sign({id:user?.id,email:user?.email.value},process.env.SESSION_SECRET as string,{expiresIn:"1h"})
+        const token= jwt.sign({id:user?.id,name:user?.name,email:user?.email},process.env.SESSION_SECRET as string,{expiresIn:"1h"})
         
         const frontendurl= req.headers.origin || "http://localhost:5173";
-        console.log(frontendurl);
+        //console.log(frontendurl);
         res.redirect(`${frontendurl}/signin?token=${token}`)
     }
     )
@@ -147,10 +146,11 @@ passport.use(
               "INSERT INTO users (name,email, password) VALUES ($1, $2,$3) RETURNING *",
               [profile.displayName,profile.emails?.[0].value, "google"]
             );
-            console.log(newUser);
             result=newUser;
-          } 
             console.log(result);
+            
+          } 
+            //console.log(result.rows[0]);
             
             return cb(null, result.rows[0]);
         } catch (err) {
